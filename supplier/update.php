@@ -1,8 +1,12 @@
 <?php
 include '../connection.php';
-$data = json_decode( file_get_contents('php://input'),true );
-$id=$_GET['id'];
 
-$res=$cc->common_update('suppliers',$data,['id'=>$id]);
+$id=$_GET['id'];
+$post = $_POST;
+
+$res=$cc->common_update('suppliers',$post,['id'=>$id]);
 
 echo json_encode($res);
+
+
+

@@ -1,9 +1,23 @@
 <?php
 include '../connection.php';
-$data = json_decode(file_get_contents('php://input'), true);
+
+
+$post = json_decode(file_get_contents('php://input'), true);
 
 $res=[];
-if($data['email']){
-    $res=$cc->common_insert('suppliers', $data);
+if($post['email']){
+    $res=$cc->common_insert('suppliers', $post);
 }
 echo json_encode($res);
+
+
+
+// include '../connection.php';
+
+// $post = $_POST;
+
+// $res = [];
+// if (!empty($post['email'])) {
+//     $res = $cc->common_insert('suppliers', $post);
+// }
+// echo json_encode($res);
