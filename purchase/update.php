@@ -3,7 +3,14 @@ include '../connection.php';
 
 $id = $_GET['id'] ?? 0;
 
-$allowed = ['supplier_id', 'invoice_no', 'purchase_date', 'total_amount', 'user_id'];
+$allowed = ['invoice_no',
+    'supplier_id',
+    'medicine_id',
+    'user_id',
+    'purchase_date',
+    'quantity',
+    'price',
+    'subtotal'];
 $data = [];
 foreach ($allowed as $key) {
     if (isset($_POST[$key])) {

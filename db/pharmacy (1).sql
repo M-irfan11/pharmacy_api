@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 12, 2026 at 09:15 AM
+-- Generation Time: Oct 16, 2026 at 05:25 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -103,7 +103,88 @@ CREATE TABLE `categories` (
 
 INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (22, 'Meats sadfasdf', 'asdsad', NULL, NULL, NULL),
-(27, 'Herbsddd', 'dddfff', NULL, NULL, NULL);
+(27, 'Herbsddd', 'dddfffd', NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `medicines`
+--
+
+CREATE TABLE `medicines` (
+  `id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `supplier_id` int(11) NOT NULL,
+  `medicine_name` varchar(150) NOT NULL,
+  `batch_no` varchar(50) DEFAULT NULL,
+  `purchase_price` decimal(10,2) NOT NULL,
+  `selling_price` decimal(10,2) NOT NULL,
+  `stock_qty` int(11) NOT NULL DEFAULT 0,
+  `expiry_date` date DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `medicines`
+--
+
+INSERT INTO `medicines` (`id`, `category_id`, `supplier_id`, `medicine_name`, `batch_no`, `purchase_price`, `selling_price`, `stock_qty`, `expiry_date`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 22, 31, 'kkkg', 'l5', 654.00, 720.00, 850, '2029-02-05', '2026-10-16 03:16:45', '2026-10-16 15:24:13', NULL),
+(3, 22, 31, 'popn', 'd2', 1250.00, 1360.00, 100, '2026-04-08', '2026-10-16 12:52:10', '2026-10-16 12:52:10', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchases`
+--
+
+CREATE TABLE `purchases` (
+  `id` int(11) NOT NULL,
+  `invoice_no` varchar(50) NOT NULL,
+  `supplier_id` int(11) NOT NULL,
+  `medicine_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `purchase_date` date NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `subtotal` decimal(12,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `purchases`
+--
+
+INSERT INTO `purchases` (`id`, `invoice_no`, `supplier_id`, `medicine_id`, `user_id`, `purchase_date`, `quantity`, `price`, `subtotal`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, '4169', 31, 1, 4, '2025-05-05', 200, 8000.00, 1600000.00, '2026-10-16 13:49:56', '2026-10-16 13:49:56', '2026-10-16 11:10:49'),
+(2, '4169', 31, 1, 4, '2025-05-05', 200, 8000.00, 1600000.00, '2026-10-16 13:49:56', '2026-10-16 13:49:56', NULL),
+(3, '41566', 1, 1, 4, '2026-05-12', 300, 50.00, 15000.00, '2026-10-16 13:50:26', '2026-10-16 13:50:26', '2026-10-16 11:10:52'),
+(4, '1245', 31, 1, 4, '2028-05-08', 100, 6000.00, 600000.00, '2026-10-16 14:51:18', '2026-10-16 14:51:18', NULL),
+(5, '12454', 31, 1, 4, '2026-08-04', 100, 200.00, 20000.00, '2026-10-16 15:03:46', '2026-10-16 15:03:46', NULL),
+(6, '4122', 31, 1, 4, '2026-08-04', 100, 50.00, 5000.00, '2026-10-16 15:24:13', '2026-10-16 15:24:13', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sales`
+--
+
+CREATE TABLE `sales` (
+  `id` int(11) NOT NULL,
+  `invoice_no` varchar(50) NOT NULL,
+  `customer_name` varchar(150) DEFAULT NULL,
+  `medicine_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `sale_date` date NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `subtotal` decimal(12,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -126,7 +207,9 @@ CREATE TABLE `suppliers` (
 --
 
 INSERT INTO `suppliers` (`id`, `supplier_name`, `phone`, `email`, `address`, `description`, `deleted_at`) VALUES
-(1, 'ghfdddd', '455', 'surafa@gmail.com', 'abhi-siniya(ethiopia)', '', NULL);
+(1, 'ghfddddg', '455', 'surafa@gmail.com', 'abhi-siniya(ethiopia)', '', NULL),
+(31, 'kamal', '789654', 'kamal@yahoo.com', 'cu,hathazari', 'fdsfg', NULL),
+(32, 'Muhit', '8565', 'muhit@gmail.com', 'fdsa', 'dfsa', NULL);
 
 -- --------------------------------------------------------
 
@@ -157,7 +240,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `mobile`, `email`, `password`, `status`, `remember_token`, `reset_token`, `reset_expires`, `image`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (2, 'Kamal Uddin', NULL, 'kamal@yahoo.com', '738f69d66dd207d6184e396e0c7e6bd582165627', 1, '14201791604761119689', NULL, NULL, NULL, NULL, NULL, NULL),
 (3, 'Muhammad', '987654', 'Muhammad@gmail.com', '7c222fb2927d828af22f592134e8932480637c0d', 1, '31741791696238804948', NULL, NULL, NULL, NULL, NULL, NULL),
-(4, 'Arafur Rahman', '12365488', 'araf@yahoo.com', '7c222fb2927d828af22f592134e8932480637c0d', 1, '40211791788060633849', NULL, NULL, NULL, NULL, NULL, NULL);
+(4, 'Arafur Rahman', '12365488', 'araf@yahoo.com', '7c222fb2927d828af22f592134e8932480637c0d', 1, '54291792155074821044', NULL, NULL, NULL, NULL, NULL, NULL),
+(5, 'Irfan', '654789', 'irfan@yahoo.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, '23281791844011658892', NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -168,6 +252,31 @@ INSERT INTO `users` (`id`, `name`, `mobile`, `email`, `password`, `status`, `rem
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `medicines`
+--
+ALTER TABLE `medicines`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_medicines_category` (`category_id`),
+  ADD KEY `fk_medicines_supplier` (`supplier_id`);
+
+--
+-- Indexes for table `purchases`
+--
+ALTER TABLE `purchases`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `supplier_id` (`supplier_id`),
+  ADD KEY `medicine_id` (`medicine_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `sales`
+--
+ALTER TABLE `sales`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `medicine_id` (`medicine_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `suppliers`
@@ -189,19 +298,63 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `medicines`
+--
+ALTER TABLE `medicines`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `purchases`
+--
+ALTER TABLE `purchases`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `sales`
+--
+ALTER TABLE `sales`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
 --
 ALTER TABLE `suppliers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `medicines`
+--
+ALTER TABLE `medicines`
+  ADD CONSTRAINT `fk_medicines_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
+  ADD CONSTRAINT `fk_medicines_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`);
+
+--
+-- Constraints for table `purchases`
+--
+ALTER TABLE `purchases`
+  ADD CONSTRAINT `purchases_ibfk_1` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
+  ADD CONSTRAINT `purchases_ibfk_2` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`),
+  ADD CONSTRAINT `purchases_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `sales`
+--
+ALTER TABLE `sales`
+  ADD CONSTRAINT `sales_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`),
+  ADD CONSTRAINT `sales_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
