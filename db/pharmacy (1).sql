@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 17, 2026 at 06:14 PM
+-- Generation Time: Oct 17, 2026 at 07:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -143,7 +143,11 @@ CREATE TABLE `medicines` (
 INSERT INTO `medicines` (`id`, `category_id`, `supplier_id`, `medicine_name`, `batch_no`, `purchase_price`, `selling_price`, `stock_qty`, `expiry_date`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (4, 36, 32, 'Amlodipine 5 mg', 'a1', 35.00, 40.00, 150, '2029-05-06', '2026-10-17 16:11:47', '2026-10-17 16:11:47', NULL),
 (5, 36, 31, 'Metformin 500 mg', 'a2', 1.10, 1.50, 200, '2029-08-06', '2026-10-17 16:13:31', '2026-10-17 16:13:31', NULL),
-(6, 36, 31, 'Ciprocin 500 mg', 'a3', 8.00, 9.00, 300, '2028-04-09', '2026-10-17 16:14:34', '2026-10-17 16:14:34', NULL);
+(6, 36, 31, 'Ciprocin 500 mg', 'a3', 8.00, 9.00, 300, '2028-04-09', '2026-10-17 16:14:34', '2026-10-17 16:14:34', NULL),
+(7, 43, 31, 'Ciprocin Eye/Ear Drops', 'g1', 95.00, 110.00, 50, '2028-04-08', '2026-10-17 17:00:08', '2026-10-17 17:00:08', NULL),
+(8, 43, 31, 'Tobrex Eye Drops 5 ml', 'l11', 130.00, 150.00, 40, '2029-03-05', '2026-10-17 17:01:27', '2026-10-17 17:01:27', NULL),
+(9, 43, 32, 'Otrivin Nasal Drops 10 ml', 'dl', 85.00, 95.00, 29, '2028-04-06', '2026-10-17 17:04:57', '2026-10-17 17:04:57', NULL),
+(10, 39, 32, 'Cef-3 Suspension 30 ml', 'l5', 120.00, 130.00, 20, '2029-06-08', '2026-10-17 17:06:44', '2026-10-17 17:06:44', NULL);
 
 -- --------------------------------------------------------
 
@@ -341,7 +345,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `medicines`
 --
 ALTER TABLE `medicines`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `purchases`
