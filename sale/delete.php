@@ -1,8 +1,5 @@
 <?php
 include '../connection.php';
+require_once __DIR__ . '/../invoice_service.php';
 
-$id = $_GET['id'] ?? 0;
-
-$res = $cc->common_update('sales', ['deleted_at' => date('Y-m-d H:i:s')], ['id' => $id]);
-
-echo json_encode($res);
+invoice_endpoint('sale', 'delete');

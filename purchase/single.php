@@ -1,7 +1,5 @@
 <?php
 include '../connection.php';
+require_once __DIR__ . '/../invoice_service.php';
 
-$id = $_GET['id'] ?? 0;
-$result = $cc->common_select('purchases', '*', ['id' => $id]);
-
-echo json_encode($result);
+invoice_endpoint('purchase', 'single');

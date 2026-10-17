@@ -1,13 +1,5 @@
 <?php
 include '../connection.php';
+require_once __DIR__ . '/../invoice_service.php';
 
-$result = $cc->common_select('purchases');
-
-// soft delete করা row (deleted_at সেট আছে) বাদ দিন
-if (!empty($result['data']) && is_array($result['data'])) {
-    $result['data'] = array_values(array_filter($result['data'], function ($row) {
-        return $row->deleted_at === null;
-    }));
-}
-
-echo json_encode($result);
+invoice_endpoint('purchase', 'list');
