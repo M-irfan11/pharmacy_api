@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 17, 2026 at 08:21 AM
+-- Generation Time: Oct 18, 2026 at 03:45 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -102,8 +102,18 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(22, 'Meats sadfasdf', 'asdsad', NULL, NULL, NULL),
-(27, 'Herbsddd', 'dddfffd', NULL, NULL, NULL);
+(36, 'Tablet', 'Solid oral dosage form, e.g. Paracetamol, Napa', NULL, NULL, NULL),
+(38, 'Capsule', 'Oral medicine enclosed in a gelatin shell', NULL, NULL, NULL),
+(39, 'Syrup', 'Liquid medicine, especially for children or those who can’t swallow tablets', NULL, NULL, NULL),
+(40, 'Injection', 'Medicine given into a vein, muscle, or under the skin', NULL, NULL, NULL),
+(41, '	Saline / IV Fluid', 'Intravenous fluids for dehydration or hospital use', NULL, NULL, NULL),
+(42, '	Ointment / Cream', 'Topical medicine for itching, infections, and burns', NULL, NULL, NULL),
+(43, 'Drops', 'Eye, ear, or nasal drops', NULL, NULL, NULL),
+(44, 'Inhaler', 'Inhaled medicine for respiratory patients (asthma, COPD)', NULL, NULL, NULL),
+(45, '	Suppository', 'Medicine administered rectally or vaginally', NULL, NULL, NULL),
+(46, 'Powder / Sachet', 'Powder mixed with water, e.g. ORS', NULL, NULL, NULL),
+(47, 'Antibiotic', 'Medicine for bacterial infections, e.g. Amoxicillin, Azithromycin', NULL, NULL, NULL),
+(48, 'Antacid / Gastric', '	Medicine for stomach acid, gastritis, and ulcers', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -131,8 +141,13 @@ CREATE TABLE `medicines` (
 --
 
 INSERT INTO `medicines` (`id`, `category_id`, `supplier_id`, `medicine_name`, `batch_no`, `purchase_price`, `selling_price`, `stock_qty`, `expiry_date`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 22, 31, 'kkkg', 'l5', 654.00, 720.00, 1000, '2029-02-05', '2026-10-16 03:16:45', '2026-10-17 05:09:33', NULL),
-(3, 22, 31, 'popn', 'd2', 1250.00, 1360.00, 100, '2026-04-08', '2026-10-16 12:52:10', '2026-10-16 12:52:10', NULL);
+(4, 36, 32, 'Amlodipine 5 mg', 'a1', 35.00, 40.00, 157, '2029-05-06', '2026-10-17 16:11:47', '2026-10-18 13:04:00', NULL),
+(5, 36, 31, 'Metformin 500 mg', 'a2', 1.10, 1.50, 198, '2029-08-06', '2026-10-17 16:13:31', '2026-10-18 13:07:19', NULL),
+(6, 36, 31, 'Ciprocin 500 mg', 'a3', 8.00, 9.00, 308, '2028-04-09', '2026-10-17 16:14:34', '2026-10-18 13:03:03', NULL),
+(7, 43, 31, 'Ciprocin Eye/Ear Drops', 'g1', 95.00, 110.00, 48, '2028-04-08', '2026-10-17 17:00:08', '2026-10-18 13:04:00', NULL),
+(8, 43, 31, 'Tobrex Eye Drops 5 ml', 'l11', 130.00, 150.00, 39, '2029-03-05', '2026-10-17 17:01:27', '2026-10-18 12:41:36', NULL),
+(9, 43, 32, 'Otrivin Nasal Drops 10 ml', 'dl', 85.00, 95.00, 29, '2028-04-06', '2026-10-17 17:04:57', '2026-10-17 17:04:57', NULL),
+(10, 39, 32, 'Cef-3 Suspension 30 ml', 'l5', 120.00, 130.00, 20, '2029-06-08', '2026-10-17 17:06:44', '2026-10-17 17:06:44', NULL);
 
 -- --------------------------------------------------------
 
@@ -150,29 +165,67 @@ CREATE TABLE `purchases` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `purchases`
+--
+
+INSERT INTO `purchases` (`id`, `invoice_no`, `supplier_id`, `user_id`, `purchase_date`, `total_amount`, `created_at`) VALUES
+(8, '0001', 31, 4, '2026-04-04', 430.00, '2026-10-18 11:30:36');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `returns`
+-- Table structure for table `purchase_items`
 --
 
-CREATE TABLE `returns` (
+CREATE TABLE `purchase_items` (
   `id` int(11) NOT NULL,
-  `return_type` enum('customer','supplier') NOT NULL,
-  `sale_id` int(11) DEFAULT NULL,
-  `purchase_id` int(11) DEFAULT NULL,
+  `purchase_id` int(11) NOT NULL,
   `medicine_id` int(11) NOT NULL,
-  `return_date` date NOT NULL,
   `quantity` int(11) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `subtotal` decimal(12,2) NOT NULL,
+  `unit_price` decimal(10,2) NOT NULL,
+  `line_total` decimal(12,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `purchase_items`
+--
+
+INSERT INTO `purchase_items` (`id`, `purchase_id`, `medicine_id`, `quantity`, `unit_price`, `line_total`) VALUES
+(13, 8, 4, 10, 35.00, 350.00),
+(14, 8, 6, 10, 8.00, 80.00);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchase_returns`
+--
+
+CREATE TABLE `purchase_returns` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `purchase_id` int(11) NOT NULL,
+  `return_no` varchar(50) NOT NULL,
+  `return_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `total` decimal(12,2) NOT NULL DEFAULT 0.00,
   `reason` varchar(255) DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `deleted_at` timestamp NULL DEFAULT NULL
-) ;
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `purchase_return_items`
+--
+
+CREATE TABLE `purchase_return_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `purchase_return_id` bigint(20) UNSIGNED NOT NULL,
+  `purchase_item_id` int(11) NOT NULL,
+  `medicine_id` int(11) NOT NULL,
+  `quantity` decimal(12,3) NOT NULL,
+  `unit_cost` decimal(12,2) NOT NULL,
+  `line_total` decimal(12,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -190,6 +243,55 @@ CREATE TABLE `sales` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `sales`
+--
+
+INSERT INTO `sales` (`id`, `invoice_no`, `customer_name`, `user_id`, `sale_date`, `total_amount`, `created_at`) VALUES
+(11, '0001', 'karim', 4, '2026-05-05', 151.50, '2026-10-18 12:41:14'),
+(12, '0002', 'jubair', 4, '2026-04-02', 159.00, '2026-10-18 12:41:36'),
+(13, '0003', 'Nahiyan', 4, '2026-10-08', 49.00, '2026-10-18 13:03:03'),
+(14, '0004', 'mahmud', 4, '2025-04-04', 150.00, '2026-10-18 13:04:00'),
+(15, '0005', 'mahmud', 4, '2025-04-04', 1.50, '2026-10-18 13:07:19');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sales_returns`
+--
+
+CREATE TABLE `sales_returns` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sale_id` int(11) NOT NULL,
+  `return_no` varchar(50) NOT NULL,
+  `return_date` datetime NOT NULL DEFAULT current_timestamp(),
+  `total` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `reason` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sales_return_items`
+--
+
+CREATE TABLE `sales_return_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `sales_return_id` bigint(20) UNSIGNED NOT NULL,
+  `sale_item_id` int(11) NOT NULL,
+  `medicine_id` int(11) NOT NULL,
+  `quantity` decimal(12,3) NOT NULL,
+  `unit_price` decimal(12,2) NOT NULL,
+  `line_total` decimal(12,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sale_items`
+--
+
 CREATE TABLE `sale_items` (
   `id` int(11) NOT NULL,
   `sale_id` int(11) NOT NULL,
@@ -199,14 +301,21 @@ CREATE TABLE `sale_items` (
   `line_total` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `purchase_items` (
-  `id` int(11) NOT NULL,
-  `purchase_id` int(11) NOT NULL,
-  `medicine_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `unit_price` decimal(10,2) NOT NULL,
-  `line_total` decimal(12,2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+--
+-- Dumping data for table `sale_items`
+--
+
+INSERT INTO `sale_items` (`id`, `sale_id`, `medicine_id`, `quantity`, `unit_price`, `line_total`) VALUES
+(14, 11, 4, 1, 40.00, 40.00),
+(15, 11, 5, 1, 1.50, 1.50),
+(16, 11, 7, 1, 110.00, 110.00),
+(17, 12, 6, 1, 9.00, 9.00),
+(18, 12, 8, 1, 150.00, 150.00),
+(19, 13, 4, 1, 40.00, 40.00),
+(20, 13, 6, 1, 9.00, 9.00),
+(21, 14, 4, 1, 40.00, 40.00),
+(22, 14, 7, 1, 110.00, 110.00),
+(23, 15, 5, 1, 1.50, 1.50);
 
 -- --------------------------------------------------------
 
@@ -262,7 +371,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `mobile`, `email`, `password`, `status`, `remember_token`, `reset_token`, `reset_expires`, `image`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (2, 'Kamal Uddin', NULL, 'kamal@yahoo.com', '738f69d66dd207d6184e396e0c7e6bd582165627', 1, '14201791604761119689', NULL, NULL, NULL, NULL, NULL, NULL),
 (3, 'Muhammad', '987654', 'Muhammad@gmail.com', '7c222fb2927d828af22f592134e8932480637c0d', 1, '31741791696238804948', NULL, NULL, NULL, NULL, NULL, NULL),
-(4, 'Arafur Rahman', '12365488', 'araf@yahoo.com', '7c222fb2927d828af22f592134e8932480637c0d', 1, '94681792211715242943', NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 'Arafur Rahman', '12365488', 'araf@yahoo.com', '7c222fb2927d828af22f592134e8932480637c0d', 1, '46731792322457895931', NULL, NULL, NULL, NULL, NULL, NULL),
 (5, 'Irfan', '654789', 'irfan@yahoo.com', '7c4a8d09ca3762af61e59520943dc26494f8941b', 1, '23281791844011658892', NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
@@ -288,23 +397,34 @@ ALTER TABLE `medicines`
 --
 ALTER TABLE `purchases`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `supplier_id` (`supplier_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `idx_purchases_invoice_no` (`invoice_no`),
+  ADD KEY `idx_purchases_supplier_id` (`supplier_id`),
+  ADD KEY `idx_purchases_user_id` (`user_id`);
 
+--
+-- Indexes for table `purchase_items`
+--
 ALTER TABLE `purchase_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_purchase_items_purchase_id` (`purchase_id`),
   ADD KEY `idx_purchase_items_medicine_id` (`medicine_id`);
 
 --
--- Indexes for table `returns`
+-- Indexes for table `purchase_returns`
 --
-ALTER TABLE `returns`
+ALTER TABLE `purchase_returns`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_returns_sale` (`sale_id`),
-  ADD KEY `fk_returns_purchase` (`purchase_id`),
-  ADD KEY `fk_returns_medicine` (`medicine_id`),
-  ADD KEY `fk_returns_user` (`user_id`);
+  ADD UNIQUE KEY `return_no` (`return_no`),
+  ADD KEY `fk_purchase_returns_purchase` (`purchase_id`);
+
+--
+-- Indexes for table `purchase_return_items`
+--
+ALTER TABLE `purchase_return_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_purchase_return_items_return` (`purchase_return_id`),
+  ADD KEY `fk_purchase_return_items_purchase_item` (`purchase_item_id`),
+  ADD KEY `fk_purchase_return_items_medicine` (`medicine_id`);
 
 --
 -- Indexes for table `sales`
@@ -312,8 +432,28 @@ ALTER TABLE `returns`
 ALTER TABLE `sales`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `uq_sales_invoice_no` (`invoice_no`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `idx_sales_user_id` (`user_id`);
 
+--
+-- Indexes for table `sales_returns`
+--
+ALTER TABLE `sales_returns`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `return_no` (`return_no`),
+  ADD KEY `fk_sales_returns_sale` (`sale_id`);
+
+--
+-- Indexes for table `sales_return_items`
+--
+ALTER TABLE `sales_return_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_sales_return_items_return` (`sales_return_id`),
+  ADD KEY `fk_sales_return_items_sale_item` (`sale_item_id`),
+  ADD KEY `fk_sales_return_items_medicine` (`medicine_id`);
+
+--
+-- Indexes for table `sale_items`
+--
 ALTER TABLE `sale_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_sale_items_sale_id` (`sale_id`),
@@ -339,37 +479,61 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `medicines`
 --
 ALTER TABLE `medicines`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `purchases`
 --
 ALTER TABLE `purchases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
+--
+-- AUTO_INCREMENT for table `purchase_items`
+--
 ALTER TABLE `purchase_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT for table `returns`
+-- AUTO_INCREMENT for table `purchase_returns`
 --
-ALTER TABLE `returns`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `purchase_returns`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `purchase_return_items`
+--
+ALTER TABLE `purchase_return_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
+--
+-- AUTO_INCREMENT for table `sales_returns`
+--
+ALTER TABLE `sales_returns`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sales_return_items`
+--
+ALTER TABLE `sales_return_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sale_items`
+--
 ALTER TABLE `sale_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -398,31 +562,56 @@ ALTER TABLE `medicines`
 -- Constraints for table `purchases`
 --
 ALTER TABLE `purchases`
-  ADD CONSTRAINT `purchases_ibfk_1` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
-  ADD CONSTRAINT `purchases_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_purchases_supplier` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`),
+  ADD CONSTRAINT `fk_purchases_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
+--
+-- Constraints for table `purchase_items`
+--
 ALTER TABLE `purchase_items`
-  ADD CONSTRAINT `fk_purchase_items_purchase` FOREIGN KEY (`purchase_id`) REFERENCES `purchases` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_purchase_items_medicine` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`);
+  ADD CONSTRAINT `fk_purchase_items_medicine` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`),
+  ADD CONSTRAINT `fk_purchase_items_purchase` FOREIGN KEY (`purchase_id`) REFERENCES `purchases` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `returns`
+-- Constraints for table `purchase_returns`
 --
-ALTER TABLE `returns`
-  ADD CONSTRAINT `fk_returns_medicine` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`),
-  ADD CONSTRAINT `fk_returns_purchase` FOREIGN KEY (`purchase_id`) REFERENCES `purchases` (`id`),
-  ADD CONSTRAINT `fk_returns_sale` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`),
-  ADD CONSTRAINT `fk_returns_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+ALTER TABLE `purchase_returns`
+  ADD CONSTRAINT `fk_purchase_returns_purchase` FOREIGN KEY (`purchase_id`) REFERENCES `purchases` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `purchase_return_items`
+--
+ALTER TABLE `purchase_return_items`
+  ADD CONSTRAINT `fk_purchase_return_items_medicine` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_purchase_return_items_purchase_item` FOREIGN KEY (`purchase_item_id`) REFERENCES `purchase_items` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_purchase_return_items_return` FOREIGN KEY (`purchase_return_id`) REFERENCES `purchase_returns` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `sales`
 --
 ALTER TABLE `sales`
-  ADD CONSTRAINT `sales_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `fk_sales_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
+--
+-- Constraints for table `sales_returns`
+--
+ALTER TABLE `sales_returns`
+  ADD CONSTRAINT `fk_sales_returns_sale` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `sales_return_items`
+--
+ALTER TABLE `sales_return_items`
+  ADD CONSTRAINT `fk_sales_return_items_medicine` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_sales_return_items_return` FOREIGN KEY (`sales_return_id`) REFERENCES `sales_returns` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_sales_return_items_sale_item` FOREIGN KEY (`sale_item_id`) REFERENCES `sale_items` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `sale_items`
+--
 ALTER TABLE `sale_items`
-  ADD CONSTRAINT `fk_sale_items_sale` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_sale_items_medicine` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`);
+  ADD CONSTRAINT `fk_sale_items_medicine` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`),
+  ADD CONSTRAINT `fk_sale_items_sale` FOREIGN KEY (`sale_id`) REFERENCES `sales` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
