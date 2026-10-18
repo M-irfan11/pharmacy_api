@@ -4,7 +4,7 @@ include '../connection.php';
 
 
 
-$sql = "SELECT count(*) as total FROM purchase";
+$sql = "SELECT count(*) as total FROM purchases";
 $result = $cc->common_query($sql);
 $pur_no = '0001';
 if($result['status']){
