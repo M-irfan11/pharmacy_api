@@ -1,7 +1,5 @@
 <?php
 include '../connection.php';
-$id=$_GET['id'];
+require_once __DIR__ . '/../return_service.php';
 
-$result=$cc->common_select('medicines','*',['id'=>$id]);
-
-echo json_encode($result);
+return_endpoint('sale', 'single');

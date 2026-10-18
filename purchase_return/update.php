@@ -1,12 +1,5 @@
 <?php
 include '../connection.php';
+require_once __DIR__ . '/../return_service.php';
 
-$id=$_GET['id'];
-$post = $_POST;
-
-$res=$cc->common_update('medicines',$post,['id'=>$id]);
-
-echo json_encode($res);
-
-
-
+return_endpoint('purchase', 'update');

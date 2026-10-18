@@ -1,4 +1,5 @@
 <?php
 include '../connection.php';
-$result=$cc->common_select('medicines');
-echo json_encode($result);
+require_once __DIR__ . '/../return_service.php';
+
+return_endpoint('sale', 'list');

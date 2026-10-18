@@ -1,6 +1,5 @@
 <?php
 include '../connection.php';
-$id=$_GET['id'];
-$res=$cc->common_delete('medicines',['id'=>$id]);
+require_once __DIR__ . '/../return_service.php';
 
-echo json_encode($res);
+return_endpoint('sale', 'delete');
