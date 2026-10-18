@@ -1,2 +1,2 @@
 <?php
-require_once __DIR__ . '/../sale/single.php';
+require_once __DIR__ . '/../sales/single.php';
