@@ -3,7 +3,7 @@ require_once __DIR__ . '/endpoint.php';
 accounts_require_method(['GET']);
 
 $view = $_GET['view'] ?? $_GET['action'] ?? '';
-$allowedViews = ['accounts', 'vouchers', 'ledger', 'profit_loss'];
+$allowedViews = ['accounts', 'next_account_code', 'vouchers', 'ledger', 'profit_loss', 'source_voucher', 'single'];
 if (!in_array($view, $allowedViews, true)) {
     http_response_code(400);
     echo json_encode(['status' => false, 'message' => 'Select a valid Accounts listing or report.', 'data' => []]);

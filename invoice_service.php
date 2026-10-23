@@ -263,6 +263,28 @@ function invoice_adjust_stock(mysqli $conn, array $config, array $oldItems, arra
     $update->close();
 }
 
+function invoice_account_voucher_config(string $type): array
+{
+    return $type === 'sale'
+        ? ['table' => 'receive_vouchers', 'source_type' => 'sales_invoice']
+        : ['table' => 'payment_vouchers', 'source_type' => 'purchase_invoice'];
+}
+
+function invoice_has_account_voucher(mysqli $conn, string $type, int $invoiceId): bool
+{
+    $voucherConfig = invoice_account_voucher_config($type);
+    $statement = $conn->prepare(
+        'SELECT id FROM `' . $voucherConfig['table'] . '`
+         WHERE source_type = ? AND source_id = ? AND status = \'posted\'
+           AND deleted_at IS NULL LIMIT 1'
+    );
+    $statement->bind_param('si', $voucherConfig['source_type'], $invoiceId);
+    $statement->execute();
+    $exists = $statement->get_result()->fetch_assoc() !== null;
+    $statement->close();
+    return $exists;
+}
+
 function invoice_handle(string $type, string $action, ?int $id = null): array
 {
     global $cc;
@@ -273,9 +295,28 @@ function invoice_handle(string $type, string $action, ?int $id = null): array
     try {
         if ($action === 'list') {
             $headers = [];
+            $voucherConfig = invoice_account_voucher_config($type);
+            $voucherByInvoice = [];
+            $voucherStatement = $conn->prepare(
+                'SELECT source_id, id, voucher_no, status
+                 FROM `' . $voucherConfig['table'] . '`
+                 WHERE source_type = ? AND source_id IS NOT NULL AND deleted_at IS NULL'
+            );
+            $voucherStatement->bind_param('s', $voucherConfig['source_type']);
+            $voucherStatement->execute();
+            $voucherResult = $voucherStatement->get_result();
+            while ($voucher = $voucherResult->fetch_assoc()) {
+                $voucherByInvoice[(int) $voucher['source_id']] = [
+                    'id' => (int) $voucher['id'],
+                    'voucher_no' => $voucher['voucher_no'],
+                    'status' => $voucher['status'],
+                ];
+            }
+            $voucherStatement->close();
             $result = $conn->query('SELECT * FROM `' . $config['header'] . '` ORDER BY id DESC');
             while ($row = $result->fetch_assoc()) {
                 $row['items'] = [];
+                $row['account_voucher'] = $voucherByInvoice[(int) $row['id']] ?? null;
                 $headers[(int) $row['id']] = $row;
             }
             $sql = 'SELECT i.id, i.`' . $config['parent_key'] . '`, i.medicine_id, i.quantity, '
@@ -352,6 +393,9 @@ function invoice_handle(string $type, string $action, ?int $id = null): array
                 $transactionStarted = false;
                 return invoice_response(false, 'Invoice was not found');
             }
+            if (invoice_has_account_voucher($conn, $type, $id)) {
+                throw new DomainException('This invoice has a posted Accounts voucher and can no longer be edited');
+            }
             $oldItems = invoice_read_items($conn, $config, $id, true);
             invoice_adjust_stock($conn, $config, $oldItems, $data['items']);
 
@@ -390,6 +434,9 @@ function invoice_handle(string $type, string $action, ?int $id = null): array
                 $conn->rollback();
                 $transactionStarted = false;
                 return invoice_response(false, 'Invoice was not found');
+            }
+            if (invoice_has_account_voucher($conn, $type, $id)) {
+                throw new DomainException('This invoice has a posted Accounts voucher and can no longer be deleted');
             }
             $oldItems = invoice_read_items($conn, $config, $id, true);
             invoice_adjust_stock($conn, $config, $oldItems, []);
