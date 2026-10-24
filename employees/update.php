@@ -1,6 +1,106 @@
 <?php
 include '../connection.php';
-$id=$_GET['id'];
- $res=$db->common_update('employee',$_POST,['id'=>$id]);
+include '../auth_check.php';
 
- echo json_encode($res);
+header('Content-Type: application/json; charset=UTF-8');
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if (!$id) {
+    http_response_code(400);
+    echo json_encode(['status' => false, 'message' => 'Invalid employee id.']);
+    exit;
+}
+
+foreach (['employee_code', 'full_name', 'phone', 'nid_number'] as $field) {
+    if (trim($_POST[$field] ?? '') === '') {
+        http_response_code(422);
+        echo json_encode(['status' => false, 'message' => $field . ' is required.']);
+        exit;
+    }
+}
+
+if (isset($_POST['status']) && !in_array($_POST['status'], ['Active', 'Inactive'], true)) {
+    http_response_code(422);
+    echo json_encode(['status' => false, 'message' => 'Status must be Active or Inactive.']);
+    exit;
+}
+
+$photo = $_FILES['photo'] ?? $_FILES['image'] ?? null;
+$photoPath = null;
+if ($photo && $photo['error'] !== UPLOAD_ERR_NO_FILE) {
+    $imageInfo = $photo['error'] === UPLOAD_ERR_OK ? getimagesize($photo['tmp_name']) : false;
+    $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
+    if (!$imageInfo || $photo['size'] > 5 * 1024 * 1024 || !isset($extensions[$imageInfo['mime']])) {
+        http_response_code(422);
+        echo json_encode(['status' => false, 'message' => 'Upload a JPG, PNG, GIF or WEBP image up to 5 MB.']);
+        exit;
+    }
+    $uploadDir = __DIR__ . '/../images/employee/';
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+        http_response_code(500);
+        echo json_encode(['status' => false, 'message' => 'Could not create employee photo directory.']);
+        exit;
+    }
+    $fileName = bin2hex(random_bytes(12)) . '.' . $extensions[$imageInfo['mime']];
+    if (!move_uploaded_file($photo['tmp_name'], $uploadDir . $fileName)) {
+        http_response_code(500);
+        echo json_encode(['status' => false, 'message' => 'Could not save employee photo.']);
+        exit;
+    }
+    $photoPath = 'images/employee/' . $fileName;
+}
+
+$employeeCode = trim($_POST['employee_code']);
+$fullName = trim($_POST['full_name']);
+$phone = trim($_POST['phone']);
+$nidNumber = trim($_POST['nid_number']);
+$designation = trim($_POST['designation'] ?? '') ?: null;
+$department = trim($_POST['department'] ?? '') ?: null;
+$joinDate = trim($_POST['join_date'] ?? '') ?: null;
+$status = $_POST['status'] ?? 'Active';
+
+try {
+    $sql = 'UPDATE employees SET employee_code = ?, full_name = ?, phone = ?, nid_number = ?, designation = ?, department = ?, join_date = ?, status = ?';
+    if ($photoPath !== null) {
+        $sql .= ', photo_path = ?';
+    }
+    $sql .= ' WHERE id = ?';
+    $statement = $cc->conn->prepare($sql);
+    if ($photoPath !== null) {
+        $statement->bind_param(
+            'sssssssssi',
+            $employeeCode,
+            $fullName,
+            $phone,
+            $nidNumber,
+            $designation,
+            $department,
+            $joinDate,
+            $status,
+            $photoPath,
+            $id
+        );
+    } else {
+        $statement->bind_param(
+            'ssssssssi',
+            $employeeCode,
+            $fullName,
+            $phone,
+            $nidNumber,
+            $designation,
+            $department,
+            $joinDate,
+            $status,
+            $id
+        );
+    }
+    $statement->execute();
+    echo json_encode(['status' => true, 'data' => $statement->affected_rows, 'message' => 'Employee updated.']);
+} catch (mysqli_sql_exception $error) {
+    http_response_code($error->getCode() === 1062 ? 409 : 500);
+    echo json_encode([
+        'status' => false,
+        'message' => $error->getCode() === 1062
+            ? 'Employee code or NID number already exists.'
+            : 'Could not update employee.',
+    ]);
+}
