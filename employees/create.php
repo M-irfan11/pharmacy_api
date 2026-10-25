@@ -48,13 +48,13 @@ $fullName = trim($_POST['full_name']);
 $phone = trim($_POST['phone']);
 $nidNumber = trim($_POST['nid_number']);
 $designation = trim($_POST['designation'] ?? '') ?: null;
-$department = trim($_POST['department'] ?? '') ?: null;
+$basicSalary = trim($_POST['basic_salary'] ?? '') ?: null;
 $joinDate = trim($_POST['join_date'] ?? '') ?: null;
 $status = $_POST['status'] ?? 'Active';
 
 try {
     $statement = $cc->conn->prepare(
-        'INSERT INTO employees (employee_code, full_name, phone, nid_number, photo_path, designation, department, join_date, status)
+        'INSERT INTO employees (employee_code, full_name, phone, nid_number, photo_path, designation, basic_salary, join_date, status)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $statement->bind_param(
@@ -65,7 +65,7 @@ try {
         $nidNumber,
         $photoPath,
         $designation,
-        $department,
+        $basicSalary,
         $joinDate,
         $status
     );

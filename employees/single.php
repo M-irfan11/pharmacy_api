@@ -11,7 +11,7 @@ if (!$id) {
 }
 
 $statement = $cc->conn->prepare(
-    'SELECT id, employee_code, full_name, phone, nid_number, photo_path, designation, department, join_date, status, created_at, updated_at
+    'SELECT id, employee_code, full_name, phone, nid_number, photo_path, designation, department, basic_salary, join_date, status, created_at, updated_at
      FROM employees WHERE id = ?'
 );
 $statement->bind_param('i', $id);

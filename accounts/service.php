@@ -157,6 +157,28 @@ function accounts_get_vouchers(mysqli $conn): array
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+function accounts_ledger_query(): string
+{
+    return "
+        SELECT 'journal' AS voucher_type, j.id AS voucher_id, j.voucher_no, j.voucher_date,
+               d.id AS detail_id, d.account_head_id, d.dr, d.cr, d.remarks
+        FROM journal_vouchers j
+        JOIN journal_voucher_details d ON d.journal_voucher_id = j.id
+        WHERE j.status = 'posted' AND j.deleted_at IS NULL
+        UNION ALL
+        SELECT 'receive' AS voucher_type, r.id AS voucher_id, r.voucher_no, r.voucher_date,
+               d.id AS detail_id, d.account_head_id, d.dr, d.cr, d.remarks
+        FROM receive_vouchers r
+        JOIN receive_voucher_details d ON d.receive_voucher_id = r.id
+        WHERE r.status = 'posted' AND r.deleted_at IS NULL
+        UNION ALL
+        SELECT 'payment' AS voucher_type, p.id AS voucher_id, p.voucher_no, p.voucher_date,
+               d.id AS detail_id, d.account_head_id, d.dr, d.cr, d.remarks
+        FROM payment_vouchers p
+        JOIN payment_voucher_details d ON d.payment_voucher_id = p.id
+        WHERE p.status = 'posted' AND p.deleted_at IS NULL";
+}
+
 function accounts_source_voucher_config(string $sourceType): array
 {
     $configs = [
@@ -376,7 +398,7 @@ try {
         $sql = 'SELECT l.voucher_type, l.voucher_id, l.voucher_no, l.voucher_date,
                        l.detail_id, l.account_head_id, a.account_code, a.account_name,
                        l.dr, l.cr, l.remarks
-                FROM ledger l
+                FROM (' . accounts_ledger_query() . ') l
                 JOIN account_heads a ON a.id = l.account_head_id
                 WHERE l.account_head_id = ?';
         if ($from !== '' && $to !== '') {
@@ -410,7 +432,8 @@ try {
         if ($from !== '') {
             $balance = $conn->prepare(
                 'SELECT COALESCE(SUM(dr), 0) AS debit, COALESCE(SUM(cr), 0) AS credit
-                 FROM ledger WHERE account_head_id = ? AND voucher_date < ?'
+                 FROM (' . accounts_ledger_query() . ') ledger_rows
+                 WHERE account_head_id = ? AND voucher_date < ?'
             );
             $balance->bind_param('is', $accountId, $from);
             $balance->execute();
@@ -441,7 +464,7 @@ try {
             "SELECT a.id, a.account_code, a.account_name, a.account_type,
                     COALESCE(SUM(l.dr), 0) AS total_debit,
                     COALESCE(SUM(l.cr), 0) AS total_credit
-             FROM ledger l
+             FROM (" . accounts_ledger_query() . ") l
              JOIN account_heads a ON a.id = l.account_head_id
              WHERE a.account_type IN ('Income', 'Expense')
                AND NOT (
